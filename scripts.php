@@ -69,7 +69,7 @@
         global $tasks, $icons;
         foreach($tasks[$status] as $task) {
             $sub_description = substr($task["description"], 0, 40);
-            $s = "<button id=\"${task['id']}\" data-date=\"${task['task_datetime']}\" data-status=\"${task['status']}\" class=\"border-0 bg-white w-100 py-2 px-1 d-flex task-card\">
+            $s = "<button id=\"${task['id']}\" data-date=\"${task['task_datetime']}\" data-status=\"${task['status']}\" class=\"border-0 w-100 py-2 px-1 d-flex task-card\">
                     <div class=\"text-success px-2 fs-5\">
                         ${icons[$status]}
                     </div>
@@ -77,9 +77,8 @@
                         <div class=\"title fw-bolder fs-13px\">${task['title']}</div>
                         <div class=\"fs-6\">
                             <div class=\"date text-secondary\">#${task['id']} created in ${task['task_datetime']}</div>
-                            <div class=\"description\"
-                                title=\"${task['description']}\">
-                                ${sub_description}</div>
+                            <div class=\"description\" title=\"${task['description']}\">
+                                ${task['description']}</div>
                         </div>
                         <div class=\"py-2\">
                             <span class=\"priority bg-primary text-white rounded-2 p-1 px-2\">${task['priority']}</span>
