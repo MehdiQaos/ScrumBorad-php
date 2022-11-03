@@ -1,3 +1,4 @@
+
 const addTaskButton = document.getElementById("add-task-button");
 const modal = document.getElementById("modal-task");
 const modalHeader = modal.querySelector("#modal-header-title");
@@ -31,10 +32,6 @@ function showModal() {
 function hideModal() {
     $("#modal-task").modal("hide");
 }
-
-// function addTask() {
-//     k
-// }
 
 function editTask() {
     modal.reset();
