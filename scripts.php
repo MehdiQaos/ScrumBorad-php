@@ -90,18 +90,68 @@
         }
     }
 
+    function validateDate($date, $format = 'Y-m-d'){
+        $d = DateTime::createFromFormat($format, $date);
+        return $d && $d->format($format) === $date;
+    }
+
+    function validateInt($value, $min_range = null, $max_range = null)
+    {
+        $options = [];
+        if ($min_range)
+            $options["min_range"] = $min_range;
+        if ($max_range)
+            $options["max_range"] = $max_range;
+        if (!filter_var($value, FILTER_VALIDATE_INT, array("options" => $options)))
+            return false;
+        return true;
+    }
+
     function taskFromPost()
     {
         global $tasks_priorities, $tasks_statuses, $tasks_types;
 
         $task = [];
-        $task["task_id"] = $_POST["task-id"];
-        $task["title"] = $_POST["task-title"];
-        $task["type_id"] = $tasks_types[$_POST["task-type"]];
-        $task["priority_id"] = $tasks_priorities[$_POST["task-priority"]];
-        $task["status_id"] = $tasks_statuses[$_POST["task-status"]];
-        $task["task_datetime"] = $_POST["task-date"];
-        $task["description"] = $_POST["task-description"];
+
+        if (isset($_POST["update"])) {
+            $value = $_POST["task-id"];
+            if (!validateInt($value, 1)) {
+                $_SESSION["error"] = "error updating task !";
+                return null;
+            }
+        }
+        $task["task_id"] = $value;
+
+        $value = $tasks_types[$_POST["task-type"]];
+        if (!validateInt($value, 1, 2)) {
+            $_SESSION["error"] = "error task type !";
+            return null;
+        }
+        $task["type_id"] = $value;
+
+        $value = $tasks_priorities[$_POST["task-priority"]];
+        if (!validateInt($value, 1, 4)) {
+            $_SESSION["error"] = "error task priority !";
+            return null;
+        }
+        $task["priority_id"] = $value;
+
+        $value = $tasks_statuses[$_POST["task-status"]];
+        if (!validateInt($value, 1, 3)) {
+            $_SESSION["error"] = "error task status !";
+            return null;
+        }
+        $task["status_id"] = $value;
+
+        $value = $_POST["task-date"];
+        if (!validateDate($value)) {
+            $_SESSION["error"] = "error task date !";
+            return null;
+        }
+        $task["task_datetime"] = $value;
+
+        $task["title"] = htmlspecialchars(strip_tags($_POST["task-title"]));
+        $task["description"] = htmlspecialchars(strip_tags($_POST["task-description"]));
 
         return $task;
     }
@@ -110,15 +160,16 @@
     {
         global $tasks_priorities, $tasks_statuses, $tasks_types, $conn;
 
-        $task = taskFromPost();
+        if ($task = taskFromPost()) {
+            $sql = "
+                    INSERT INTO Tasks (title, task_datetime, type_id, status_id, priority_id, description)
+                    VALUES (\"${task['title']}\", \"${task['task_datetime']}\", ${task['type_id']}, ${task['status_id']}, ${task['priority_id']}, \"${task['description']}\");
+                ";
+            
+            $result = $conn->query($sql);
+            $_SESSION['message'] = "Task has been added successfully !";
+        }
 
-        $sql = "
-                INSERT INTO Tasks (title, task_datetime, type_id, status_id, priority_id, description)
-                VALUES (\"${task['title']}\", \"${task['task_datetime']}\", ${task['type_id']}, ${task['status_id']}, ${task['priority_id']}, \"${task['description']}\");
-               ";
-        
-        $result = $conn->query($sql);
-        $_SESSION['message'] = "Task has been added successfully !";
 		header('location: index.php');
     }
 
@@ -126,17 +177,17 @@
     {
         global $conn;
 
-        $task = taskFromPost();
+        if($task = taskFromPost()) {
+            $sql = "
+                    UPDATE Tasks
+                    SET title=\"${task['title']}\", task_datetime=\"${task['task_datetime']}\", type_id=${task['type_id']}, priority_id=${task['priority_id']}, status_id=${task['status_id']}, description=\"${task['description']}\"
+                    WHERE id = ${task['task_id']};
+                ";
 
-        $sql = "
-                UPDATE Tasks
-                SET title=\"${task['title']}\", task_datetime=\"${task['task_datetime']}\", type_id=${task['type_id']}, priority_id=${task['priority_id']}, status_id=${task['status_id']}, description=\"${task['description']}\"
-                WHERE id = ${task['task_id']};
-               ";
+            $result = $conn->query($sql);
 
-        $result = $conn->query($sql);
-
-        $_SESSION['message'] = "Task has been updated successfully !";
+            $_SESSION['message'] = "Task has been updated successfully !";
+        }
 		header('location: index.php');
     }
 

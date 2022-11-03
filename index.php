@@ -53,6 +53,16 @@
 							<button type="button" class="btn-close" data-bs-dismiss="alert"></span>
 						</div>
 					<?php endif ?>
+					<?php if (isset($_SESSION['error'])): ?>
+						<div class="alert alert-danger alert-dismissible fade show">
+						<strong>Success!</strong>
+							<?php 
+								echo $_SESSION['error']; 
+								unset($_SESSION['error']);
+							?>
+							<button type="button" class="btn-close" data-bs-dismiss="alert"></span>
+						</div>
+					<?php endif ?>
 					<div class="row g-3">
 						<div class="col-lg-4">
 							<div class="">
