@@ -47,6 +47,3 @@ Voir les maquettes en format PNG dans 📁 `/design`.
 
 ![modal](./design/modal.png)
 ---
-
-
-Best of luck! 🚀
