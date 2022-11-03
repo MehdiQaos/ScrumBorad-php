@@ -32,6 +32,10 @@ function hideModal() {
     $("#modal-task").modal("hide");
 }
 
+// function addTask() {
+//     k
+// }
+
 function editTask() {
     modal.reset();
     modalHeader.innerText = "Edit task";

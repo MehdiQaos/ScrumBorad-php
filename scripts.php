@@ -42,7 +42,7 @@
     if(isset($_POST['save']))        saveTask();
     if(isset($_POST['update']))      updateTask();
     if(isset($_POST['delete']))      deleteTask();
-    
+
     function getTasks()
     {
         global $conn, $tasks, $tasks_counters;
