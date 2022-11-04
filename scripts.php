@@ -35,7 +35,12 @@
         "Done" => '<i class="bi bi-check-circle"></i>'
     ];
 
-    include('database.php');
+    try {
+        include('database.php');
+    } catch (Exception $e) {
+        die("<br>" . "Error connecting to the database !" . "<br>");
+    }
+
     session_start();
 
     //ROUTING
@@ -158,7 +163,7 @@
 
     function saveTask()
     {
-        global $tasks_priorities, $tasks_statuses, $tasks_types, $conn;
+        global $conn;
 
         if ($task = taskFromPost()) {
             $sql = "
@@ -166,8 +171,12 @@
                     VALUES (\"${task['title']}\", \"${task['task_datetime']}\", ${task['type_id']}, ${task['status_id']}, ${task['priority_id']}, \"${task['description']}\");
                 ";
             
-            $result = $conn->query($sql);
-            $_SESSION['message'] = "Task has been added successfully !";
+            try {
+                $result = $conn->query($sql);
+                $_SESSION['message'] = "Task has been added successfully !";
+            } catch (Exception $e) {
+                $_SESSION['error'] = "Error: Task not added !";
+            }
         }
 
 		header('location: index.php');
@@ -184,9 +193,12 @@
                     WHERE id = ${task['task_id']};
                 ";
 
-            $result = $conn->query($sql);
-
-            $_SESSION['message'] = "Task has been updated successfully !";
+            try {
+                $result = $conn->query($sql);
+                $_SESSION['message'] = "Task has been updated successfully !";
+            } catch (Exception $e) {
+                $_SESSION['error'] = "Error: Task not updated !";
+            }
         }
 		header('location: index.php');
     }
@@ -202,9 +214,13 @@
                 WHERE id = $task_id;
                ";
 
-        $result = $conn->query($sql);
+        try {
+            $result = $conn->query($sql);
+            $_SESSION['message'] = "Task has been deleted successfully !";
+        } catch (Exception $e) {
+            $_SESSION['error'] = "Error: Task not deleted !";
+        }
         
-        $_SESSION['message'] = "Task has been deleted successfully !";
 		header('location: index.php');
     }
 ?>

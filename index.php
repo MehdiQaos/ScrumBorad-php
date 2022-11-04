@@ -55,7 +55,7 @@
 					<?php endif ?>
 					<?php if (isset($_SESSION['error'])): ?>
 						<div class="alert alert-danger alert-dismissible fade show">
-						<strong>Success!</strong>
+						<strong>Fail!</strong>
 							<?php 
 								echo $_SESSION['error']; 
 								unset($_SESSION['error']);
